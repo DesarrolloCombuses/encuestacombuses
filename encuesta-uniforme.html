@@ -4,65 +4,71 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Combuses — Selección del nuevo uniforme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#2A2A26;
-    --ink-soft:#5C5B54;
-    --paper:#EFEBE2;
-    --card:#FBF9F4;
-    --line:#D8D3C4;
-    --thread:#2F7D4F;
-    --thread-dark:#1F5936;
-    --ok:#2F7D4F;
-    --danger:#A83B2E;
-    --radius:10px;
+    --brand:#1E8449;
+    --brand-light:#2FA05C;
+    --brand-dark:#145C33;
+    --ink:#161B18;
+    --ink-soft:#66716C;
+    --paper:#F6F8F6;
+    --card:#FFFFFF;
+    --panel:#EEF4F0;
+    --line:#E3E8E4;
+    --danger:#C7402F;
+    --radius:18px;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     background:var(--paper);
     color:var(--ink);
-    font-family:"Helvetica Neue", Arial, sans-serif;
+    font-family:"Manrope","Helvetica Neue", Arial, sans-serif;
     line-height:1.5;
+    -webkit-font-smoothing:antialiased;
   }
   .wrap{
-    max-width:720px;
+    max-width:640px;
     margin:0 auto;
     padding:0 1.25rem;
   }
   header.hero{
-    background:var(--ink);
-    color:var(--paper);
-    padding:2.4rem 1.25rem 2rem;
-    border-bottom:6px solid var(--thread);
+    background:linear-gradient(150deg, var(--brand-dark), var(--brand) 75%);
+    color:#fff;
+    padding:2.6rem 1.25rem 2.2rem;
   }
   header.hero .wrap{
     display:flex;
     flex-direction:column;
-    gap:.6rem;
+    gap:.7rem;
   }
   .tag{
     display:inline-block;
     width:fit-content;
     font-size:.72rem;
-    letter-spacing:.04em;
-    color:var(--thread);
-    background:rgba(180,101,42,.15);
-    border:1px solid rgba(180,101,42,.4);
-    padding:.25rem .6rem;
+    font-weight:700;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--brand-dark);
+    background:#fff;
+    padding:.3rem .7rem;
     border-radius:999px;
   }
   h1{
-    font-size:1.7rem;
+    font-size:1.85rem;
     margin:.2rem 0 0;
-    font-weight:700;
+    font-weight:800;
+    letter-spacing:-.01em;
     max-width:20ch;
   }
   header.hero p{
-    color:#D8D4C7;
+    color:rgba(255,255,255,.88);
     max-width:52ch;
     margin:.2rem 0 0;
-    font-size:.95rem;
+    font-size:.96rem;
   }
   .header-actions{
     display:flex;
@@ -72,29 +78,30 @@
   .edit-toggle{
     font:inherit;
     font-size:.8rem;
-    background:transparent;
-    color:var(--paper);
-    border:1px solid rgba(239,235,226,.5);
-    padding:.4rem .8rem;
+    font-weight:600;
+    background:rgba(255,255,255,.12);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.55);
+    padding:.5rem .9rem;
     border-radius:999px;
     cursor:pointer;
     align-self:flex-start;
-    margin-top:.4rem;
+    margin-top:.5rem;
   }
-  .edit-toggle:hover{border-color:var(--paper);}
+  .edit-toggle:hover{background:rgba(255,255,255,.22);}
   .edit-toggle.on{
-    background:var(--thread);
-    border-color:var(--thread);
-    color:#fff;
+    background:#fff;
+    border-color:#fff;
+    color:var(--brand-dark);
   }
-  form{margin-top:1.4rem;}
+  form{margin-top:1.6rem;}
   .count{
     font-size:.8rem;
     color:var(--ink-soft);
-    margin:0 0 .9rem;
+    margin:0 0 1rem;
     text-align:center;
   }
-  .progress{margin-bottom:1.2rem;}
+  .progress{margin-bottom:1.4rem;}
   .progress-bar{
     height:6px;
     background:var(--line);
@@ -104,12 +111,13 @@
   .progress-fill{
     height:100%;
     width:0%;
-    background:var(--thread-dark);
+    background:var(--brand);
     transition:width .25s ease;
   }
   .progress-label{
-    margin-top:.5rem;
+    margin-top:.55rem;
     font-size:.78rem;
+    font-weight:600;
     color:var(--ink-soft);
     text-align:center;
   }
@@ -118,9 +126,10 @@
     background:var(--card);
     border:1px solid var(--line);
     border-radius:var(--radius);
-    padding:1.4rem 1.4rem 1.6rem;
+    padding:1.6rem 1.6rem 1.8rem;
     margin-bottom:1.1rem;
     position:relative;
+    box-shadow:0 1px 2px rgba(20,30,25,.04), 0 10px 30px rgba(20,30,25,.06);
   }
   .section.active{display:block;}
   .section .label-row{
@@ -128,16 +137,20 @@
     align-items:baseline;
     justify-content:space-between;
     gap:1rem;
-    margin-bottom:.9rem;
+    margin-bottom:1.1rem;
   }
   .section h2{
-    font-size:1.05rem;
+    font-size:1.15rem;
     margin:0;
-    font-weight:700;
+    font-weight:800;
+    letter-spacing:-.01em;
   }
   .req{
-    color:var(--thread-dark);
-    font-size:.8rem;
+    color:var(--brand-dark);
+    font-weight:700;
+    font-size:.76rem;
+    text-transform:uppercase;
+    letter-spacing:.04em;
   }
   .stats-section{display:none;}
   .stats-section.show{display:block;}
@@ -172,7 +185,7 @@
   }
   .stat-bar-fill{
     height:100%;
-    background:var(--thread-dark);
+    background:var(--brand);
   }
   .stat-count{
     flex:0 0 auto;
@@ -181,89 +194,99 @@
     color:var(--ink-soft);
   }
   .stat-winner .stat-label{font-weight:700;}
-  .stat-winner .stat-bar-fill{background:var(--thread);}
+  .stat-winner .stat-bar-fill{background:var(--brand-dark);}
   input[type=text], select, textarea{
     width:100%;
     font:inherit;
-    padding:.6rem .7rem;
-    border:1px solid var(--line);
-    border-radius:8px;
+    padding:.75rem .9rem;
+    border:1.5px solid var(--line);
+    border-radius:10px;
     background:#fff;
     color:var(--ink);
   }
-  textarea{min-height:90px; resize:vertical;}
+  textarea{min-height:110px; resize:vertical;}
   input[type=text]:focus, select:focus, textarea:focus{
-    outline:2px solid var(--thread);
-    outline-offset:1px;
+    outline:none;
+    border-color:var(--brand);
+    box-shadow:0 0 0 3px rgba(30,132,73,.15);
   }
   .swatches{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
-    gap:.8rem;
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
   }
   .swatch{
     border:2px solid var(--line);
-    border-radius:8px;
+    border-radius:14px;
     overflow:hidden;
     cursor:pointer;
     background:#fff;
-    transition:border-color .15s ease;
-    display:flex;
-    flex-direction:column;
+    transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
   }
-  .swatch:hover{border-color:var(--thread);}
+  .swatch:hover{border-color:var(--brand-light); transform:translateY(-1px);}
   .swatch.selected{
-    border-color:var(--thread-dark);
-    box-shadow:0 0 0 1px var(--thread-dark);
+    border-color:var(--brand);
+    box-shadow:0 0 0 3px rgba(30,132,73,.15);
   }
-  .swatch img{
-    width:100%;
-    height:190px;
-    object-fit:cover;
-    display:block;
-    background:#e9e6dc;
-  }
-  .swatch .cap{
-    padding:.6rem .7rem;
-    font-size:.85rem;
-    display:flex;
-    align-items:flex-start;
-    gap:.5rem;
-  }
-  .swatch .dot{
-    width:14px;height:14px;
-    border-radius:50%;
-    border:2px solid var(--ink-soft);
-    flex:0 0 auto;
-    margin-top:.15rem;
+  .swatch-media{
     position:relative;
+    aspect-ratio:4/3;
+    background:var(--panel);
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
-  .swatch.selected .dot{border-color:var(--thread-dark);}
-  .swatch.selected .dot::after{
-    content:"";
+  .swatch-media img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+  }
+  .check-badge{
     position:absolute;
-    inset:2px;
+    top:12px;
+    right:12px;
+    width:30px;
+    height:30px;
     border-radius:50%;
-    background:var(--thread-dark);
+    background:var(--brand);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    transform:scale(.6);
+    transition:opacity .15s ease, transform .15s ease;
+    box-shadow:0 3px 8px rgba(20,30,25,.3);
   }
+  .swatch.selected .check-badge{opacity:1; transform:scale(1);}
+  .swatch .cap{
+    padding:.9rem 1.1rem;
+    font-size:.98rem;
+    font-weight:600;
+    text-align:center;
+    border-top:1px solid var(--line);
+  }
+  .swatch.selected .cap{color:var(--brand-dark);}
   .yesno{
     display:flex;
-    gap:.6rem;
+    gap:.7rem;
   }
   .yesno button{
     flex:1;
     font:inherit;
-    padding:.7rem;
-    border:1px solid var(--line);
-    border-radius:8px;
+    font-weight:700;
+    padding:.8rem;
+    border:1.5px solid var(--line);
+    border-radius:999px;
     background:#fff;
     cursor:pointer;
     color:var(--ink);
   }
+  .yesno button:hover{border-color:var(--brand-light);}
   .yesno button.selected{
-    background:var(--ink);
-    color:var(--paper);
-    border-color:var(--ink);
+    background:var(--brand);
+    color:#fff;
+    border-color:var(--brand);
   }
   .clear-link{
     background:none;
@@ -273,12 +296,12 @@
     text-decoration:underline;
     cursor:pointer;
     padding:0;
-    margin-top:.5rem;
+    margin-top:.7rem;
   }
   .err{
     color:var(--danger);
     font-size:.82rem;
-    margin-top:.5rem;
+    margin-top:.6rem;
     display:none;
   }
   .section.has-error{border-color:var(--danger);}
@@ -296,8 +319,8 @@
   .nav-btn{
     font:inherit;
     font-weight:700;
-    padding:.9rem 1rem;
-    border-radius:8px;
+    padding:.95rem 1rem;
+    border-radius:12px;
     cursor:pointer;
     border:none;
   }
@@ -305,27 +328,29 @@
     flex:0 0 auto;
     min-width:96px;
     background:#fff;
-    border:1px solid var(--line);
-    color:var(--ink);
+    border:1.5px solid var(--brand);
+    color:var(--brand-dark);
   }
-  .nav-btn.back:disabled{opacity:.35; cursor:default;}
+  .nav-btn.back:hover{background:var(--panel);}
+  .nav-btn.back:disabled{opacity:.35; cursor:default; background:#fff;}
   .nav-btn.next{
     flex:1;
-    background:var(--thread-dark);
+    background:var(--brand);
     color:#fff;
+    box-shadow:0 4px 14px rgba(30,132,73,.35);
   }
-  .nav-btn.next:hover{background:var(--thread);}
-  .nav-btn.next:disabled{opacity:.6; cursor:default;}
+  .nav-btn.next:hover{background:var(--brand-light);}
+  .nav-btn.next:disabled{opacity:.6; cursor:default; box-shadow:none;}
   .thanks{
     display:none;
-    background:var(--ok);
+    background:linear-gradient(150deg, var(--brand-dark), var(--brand) 75%);
     color:#fff;
     border-radius:var(--radius);
-    padding:1.6rem 1.4rem;
+    padding:1.8rem 1.6rem;
     margin-top:1.4rem;
   }
-  .thanks h2{margin:0 0 .4rem; font-size:1.1rem;}
-  .thanks p{margin:0; font-size:.9rem; opacity:.9;}
+  .thanks h2{margin:0 0 .4rem; font-size:1.15rem;}
+  .thanks p{margin:0; font-size:.92rem; opacity:.92;}
 </style>
 </head>
 <body>
@@ -497,6 +522,13 @@ function makeMedia(imgSrc, altText, photoKey){
   img.loading = "lazy";
   img.dataset.photokey = photoKey;
   media.appendChild(img);
+
+  const badge = document.createElement("span");
+  badge.className = "check-badge";
+  badge.setAttribute("aria-hidden", "true");
+  badge.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  media.appendChild(badge);
+
   return media;
 }
 
@@ -630,7 +662,7 @@ function buildSwatchSection(q){
       card.appendChild(makeMedia(opt.img, opt.label, `${q.id}__${i}`));
       const cap = document.createElement("div");
       cap.className = "cap";
-      cap.innerHTML = `<span class="dot"></span><span>${opt.label}</span>`;
+      cap.textContent = opt.label;
       card.appendChild(cap);
       card.addEventListener("click", ()=>{
         grid.querySelectorAll(".swatch").forEach(s=>s.classList.remove("selected"));
@@ -646,7 +678,6 @@ function buildSwatchSection(q){
     grid.className = "swatches";
     const card = document.createElement("div");
     card.className = "swatch";
-    card.style.gridColumn = "1 / -1";
     card.appendChild(makeMedia(q.img, q.title, `${q.id}__0`));
     grid.appendChild(card);
     section.appendChild(grid);
@@ -672,7 +703,6 @@ function buildSwatchSection(q){
     grid.className = "swatches";
     const card = document.createElement("div");
     card.className = "swatch";
-    card.style.gridColumn = "1 / -1";
     card.appendChild(makeMedia(q.img, q.title, `${q.id}__0`));
     grid.appendChild(card);
     section.appendChild(grid);
