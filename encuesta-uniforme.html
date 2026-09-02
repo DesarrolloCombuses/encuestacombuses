@@ -152,6 +152,11 @@
     text-transform:uppercase;
     letter-spacing:.04em;
   }
+  .hint{
+    margin:-.5rem 0 1rem;
+    font-size:.85rem;
+    color:var(--ink-soft);
+  }
   .stats-section{display:none;}
   .stats-section.show{display:block;}
   .stat-total{
@@ -654,6 +659,11 @@ function buildSwatchSection(q){
   section.appendChild(row);
 
   if(isMulti){
+    const hint = document.createElement("p");
+    hint.className = "hint";
+    hint.textContent = "Toca la foto que prefieras para seleccionarla";
+    section.appendChild(hint);
+
     const grid = document.createElement("div");
     grid.className = "swatches";
     q.options.forEach((opt, i)=>{
