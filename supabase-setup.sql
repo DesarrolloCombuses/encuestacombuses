@@ -108,16 +108,15 @@ insert into storage.buckets (id, name, public)
 values ('encuesta-uniforme-fotos', 'encuesta-uniforme-fotos', true)
 on conflict (id) do nothing;
 
--- Una sola política que cubre lectura/subida/reemplazo/borrado, pero SOLO
--- dentro de este bucket puntual (bucket_id filtrado). Se necesita "for all"
--- porque el upsert que usa la encuesta al reemplazar una foto internamente
--- puede requerir select+insert+update+delete sobre el mismo objeto.
+-- Las fotos ya se subieron y no hace falta que el publico pueda seguir
+-- escribiendo -- solo se deja SELECT (necesario para que .list() encuentre
+-- las fotos personalizadas al cargar la pagina). Sin politica de insert/
+-- update/delete, nadie puede cambiar las fotos usando la clave publica.
 drop policy if exists "encuesta_uniforme_fotos_subida" on storage.objects;
 drop policy if exists "encuesta_uniforme_fotos_actualizacion" on storage.objects;
 drop policy if exists "encuesta_uniforme_fotos_gestion" on storage.objects;
-create policy "encuesta_uniforme_fotos_gestion"
+create policy "encuesta_uniforme_fotos_lectura"
   on storage.objects
-  for all
+  for select
   to anon, authenticated
-  using (bucket_id = 'encuesta-uniforme-fotos')
-  with check (bucket_id = 'encuesta-uniforme-fotos');
+  using (bucket_id = 'encuesta-uniforme-fotos');

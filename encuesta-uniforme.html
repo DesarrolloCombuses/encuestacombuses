@@ -24,7 +24,6 @@
     color:var(--ink);
     font-family:"Helvetica Neue", Arial, sans-serif;
     line-height:1.5;
-    padding-bottom:4rem;
   }
   .wrap{
     max-width:720px;
@@ -34,7 +33,7 @@
   header.hero{
     background:var(--ink);
     color:var(--paper);
-    padding:3rem 1.25rem 2.5rem;
+    padding:2.4rem 1.25rem 2rem;
     border-bottom:6px solid var(--thread);
   }
   header.hero .wrap{
@@ -54,7 +53,7 @@
     border-radius:999px;
   }
   h1{
-    font-size:1.9rem;
+    font-size:1.7rem;
     margin:.2rem 0 0;
     font-weight:700;
     max-width:20ch;
@@ -63,32 +62,12 @@
     color:#D8D4C7;
     max-width:52ch;
     margin:.2rem 0 0;
-    font-size:.98rem;
+    font-size:.95rem;
   }
-  form{margin-top:2.2rem;}
-  .section{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:1.4rem 1.4rem 1.6rem;
-    margin-bottom:1.1rem;
-    position:relative;
-  }
-  .section .label-row{
+  .header-actions{
     display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    gap:1rem;
-    margin-bottom:.9rem;
-  }
-  .section h2{
-    font-size:1rem;
-    margin:0;
-    font-weight:700;
-  }
-  .req{
-    color:var(--thread-dark);
-    font-size:.8rem;
+    gap:.6rem;
+    flex-wrap:wrap;
   }
   .edit-toggle{
     font:inherit;
@@ -108,10 +87,57 @@
     border-color:var(--thread);
     color:#fff;
   }
-  .header-actions{
+  form{margin-top:1.4rem;}
+  .count{
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin:0 0 .9rem;
+    text-align:center;
+  }
+  .progress{margin-bottom:1.2rem;}
+  .progress-bar{
+    height:6px;
+    background:var(--line);
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--thread-dark);
+    transition:width .25s ease;
+  }
+  .progress-label{
+    margin-top:.5rem;
+    font-size:.78rem;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+  .section{
+    display:none;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:1.4rem 1.4rem 1.6rem;
+    margin-bottom:1.1rem;
+    position:relative;
+  }
+  .section.active{display:block;}
+  .section .label-row{
     display:flex;
-    gap:.6rem;
-    flex-wrap:wrap;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:1rem;
+    margin-bottom:.9rem;
+  }
+  .section h2{
+    font-size:1.05rem;
+    margin:0;
+    font-weight:700;
+  }
+  .req{
+    color:var(--thread-dark);
+    font-size:.8rem;
   }
   .stats-section{display:none;}
   .stats-section.show{display:block;}
@@ -156,21 +182,6 @@
   }
   .stat-winner .stat-label{font-weight:700;}
   .stat-winner .stat-bar-fill{background:var(--thread);}
-  .swatch-media{position:relative;}
-  .photo-edit{
-    display:none;
-    position:absolute;
-    right:8px;
-    bottom:8px;
-    background:rgba(42,42,38,.85);
-    color:#fff;
-    font-size:.72rem;
-    padding:.35rem .6rem;
-    border-radius:6px;
-    cursor:pointer;
-  }
-  body.edit-mode .photo-edit{display:inline-block;}
-  .photo-edit input{display:none;}
   input[type=text], select, textarea{
     width:100%;
     font:inherit;
@@ -187,7 +198,7 @@
   }
   .swatches{
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
     gap:.8rem;
   }
   .swatch{
@@ -242,7 +253,7 @@
   .yesno button{
     flex:1;
     font:inherit;
-    padding:.6rem;
+    padding:.7rem;
     border:1px solid var(--line);
     border-radius:8px;
     background:#fff;
@@ -272,27 +283,39 @@
   }
   .section.has-error{border-color:var(--danger);}
   .section.has-error .err{display:block;}
-  .submit-row{
+  #submitError{margin-bottom:1rem;}
+  .nav-row{
     display:flex;
-    align-items:center;
-    gap:1rem;
-    margin-top:1.4rem;
+    gap:.8rem;
+    margin-top:.2rem;
+    padding:.8rem 0 1.4rem;
+    position:sticky;
+    bottom:0;
+    background:var(--paper);
   }
-  button.submit{
+  .nav-btn{
     font:inherit;
     font-weight:700;
-    background:var(--thread-dark);
-    color:#fff;
-    border:none;
-    padding:.85rem 1.6rem;
+    padding:.9rem 1rem;
     border-radius:8px;
     cursor:pointer;
+    border:none;
   }
-  button.submit:hover{background:var(--thread);}
-  .count{
-    font-size:.82rem;
-    color:var(--ink-soft);
+  .nav-btn.back{
+    flex:0 0 auto;
+    min-width:96px;
+    background:#fff;
+    border:1px solid var(--line);
+    color:var(--ink);
   }
+  .nav-btn.back:disabled{opacity:.35; cursor:default;}
+  .nav-btn.next{
+    flex:1;
+    background:var(--thread-dark);
+    color:#fff;
+  }
+  .nav-btn.next:hover{background:var(--thread);}
+  .nav-btn.next:disabled{opacity:.6; cursor:default;}
   .thanks{
     display:none;
     background:var(--ok);
@@ -313,7 +336,6 @@
     <h1>Tú eliges — el nuevo uniforme</h1>
     <p>Queremos que la nueva dotación te represente. Revisa cada opción y marca la que más se ajuste a tu gusto y a tu jornada de trabajo.</p>
     <div class="header-actions">
-      <button type="button" class="edit-toggle" id="editToggle">Cambiar fotos</button>
       <button type="button" class="edit-toggle" id="statsToggle">Ver estadísticas</button>
     </div>
   </div>
@@ -321,6 +343,11 @@
 
 <div class="wrap">
   <form id="survey">
+    <p class="count" id="count"></p>
+    <div class="progress">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel"></div>
+    </div>
 
     <div class="section" data-field="nombre">
       <div class="label-row"><h2>Nombre completo</h2><span class="req">Obligatorio</span></div>
@@ -340,17 +367,16 @@
 
     <div id="swatch-sections"></div>
 
-    <div id="yesno-sections"></div>
-
     <div class="section" data-field="comentario">
       <div class="label-row"><h2>¿Qué opinas?</h2></div>
       <textarea id="comentario" placeholder="Cuéntanos qué piensas o si tienes alguna propuesta"></textarea>
     </div>
 
     <p class="err" id="submitError">No se pudo enviar tu respuesta. Revisa tu conexión e inténtalo de nuevo.</p>
-    <div class="submit-row">
-      <button type="submit" class="submit">Enviar respuesta</button>
-      <span class="count" id="count"></span>
+
+    <div class="nav-row">
+      <button type="button" class="nav-btn back" id="backBtn">Atrás</button>
+      <button type="submit" class="nav-btn next" id="nextBtn">Siguiente</button>
     </div>
   </form>
 
@@ -461,32 +487,6 @@ const swatchQuestions = [
 
 const state = {};
 const swatchHost = document.getElementById("swatch-sections");
-const yesnoHost = document.getElementById("yesno-sections");
-
-function compressImage(file, maxWidth){
-  return new Promise((resolve, reject)=>{
-    const reader = new FileReader();
-    reader.onload = (e)=>{
-      const img = new Image();
-      img.onload = ()=>{
-        const scale = Math.min(1, maxWidth / img.width);
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob((blob)=>{
-          if(!blob){ reject(new Error("No se pudo comprimir la imagen")); return; }
-          resolve({ dataUrl: canvas.toDataURL("image/jpeg", 0.82), blob });
-        }, "image/jpeg", 0.82);
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
 
 function makeMedia(imgSrc, altText, photoKey){
   const media = document.createElement("div");
@@ -497,37 +497,6 @@ function makeMedia(imgSrc, altText, photoKey){
   img.loading = "lazy";
   img.dataset.photokey = photoKey;
   media.appendChild(img);
-
-  const label = document.createElement("label");
-  label.className = "photo-edit";
-  label.textContent = "Cambiar foto";
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.addEventListener("click", (ev)=> ev.stopPropagation());
-  input.addEventListener("change", async (ev)=>{
-    ev.stopPropagation();
-    const file = ev.target.files[0];
-    if(!file) return;
-    try{
-      const { dataUrl, blob } = await compressImage(file, 900);
-      img.src = dataUrl;
-      const path = `${photoKey}.jpg`;
-      const { error } = await sb.storage.from(FOTOS_BUCKET).upload(path, blob, {
-        upsert: true,
-        contentType: "image/jpeg"
-      });
-      if(error) throw error;
-      const { data } = sb.storage.from(FOTOS_BUCKET).getPublicUrl(path);
-      img.src = data.publicUrl + "?t=" + Date.now();
-    }catch(err){
-      console.error("No se pudo guardar la foto", err);
-    }
-  });
-  label.addEventListener("click", (ev)=> ev.stopPropagation());
-  label.appendChild(input);
-  media.appendChild(label);
-
   return media;
 }
 
@@ -547,13 +516,6 @@ async function applyCustomPhotos(){
     console.error("No se pudieron cargar fotos personalizadas", e);
   }
 }
-
-const editToggle = document.getElementById("editToggle");
-editToggle.addEventListener("click", ()=>{
-  const on = document.body.classList.toggle("edit-mode");
-  editToggle.classList.toggle("on", on);
-  editToggle.textContent = on ? "Listo" : "Cambiar fotos";
-});
 
 const statTitles = [
   { id: "cargo", title: "Cargo", options: ["ADMINISTRATIVO", "OPERATIVO"] },
@@ -762,6 +724,42 @@ const form = document.getElementById("survey");
 const thanks = document.getElementById("thanks");
 const countEl = document.getElementById("count");
 const submitError = document.getElementById("submitError");
+const progressFill = document.getElementById("progressFill");
+const progressLabel = document.getElementById("progressLabel");
+const backBtn = document.getElementById("backBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+const steps = Array.from(form.querySelectorAll(".section"));
+let currentStep = 0;
+
+function stepIsValid(section){
+  const field = section.dataset.field;
+  if(field === "nombre") return document.getElementById("nombre").value.trim().length > 0;
+  if(field === "cargo") return !!document.getElementById("cargo").value;
+  if(field === "comentario") return true;
+  const q = swatchQuestions.find(q=> q.id === field);
+  if(!q) return true;
+  return q.required === false || !!state[q.id];
+}
+
+function updateNav(){
+  const total = steps.length;
+  progressFill.style.width = ((currentStep + 1) / total * 100) + "%";
+  progressLabel.textContent = "Pregunta " + (currentStep + 1) + " de " + total;
+  backBtn.disabled = currentStep === 0;
+  nextBtn.textContent = currentStep === total - 1 ? "Enviar respuesta" : "Siguiente";
+}
+
+function showStep(i){
+  steps.forEach((el, idx)=> el.classList.toggle("active", idx === i));
+  currentStep = i;
+  updateNav();
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+backBtn.addEventListener("click", ()=>{
+  if(currentStep > 0) showStep(currentStep - 1);
+});
 
 async function refreshCount(){
   try{
@@ -775,53 +773,33 @@ async function refreshCount(){
   }
 }
 refreshCount();
+showStep(0);
 
 form.addEventListener("submit", async (e)=>{
   e.preventDefault();
   submitError.style.display = "none";
-  let valid = true;
 
-  const nombreSection = document.querySelector('[data-field="nombre"]');
-  const nombre = document.getElementById("nombre").value.trim();
-  if(!nombre){
-    nombreSection.classList.add("has-error");
-    valid = false;
-  } else {
-    nombreSection.classList.remove("has-error");
+  const section = steps[currentStep];
+  if(!stepIsValid(section)){
+    section.classList.add("has-error");
+    section.querySelector(".err").scrollIntoView({behavior:"smooth", block:"center"});
+    return;
   }
+  section.classList.remove("has-error");
 
-  const cargoSection = document.querySelector('[data-field="cargo"]');
-  const cargo = document.getElementById("cargo").value;
-  if(!cargo){
-    cargoSection.classList.add("has-error");
-    valid = false;
-  } else {
-    cargoSection.classList.remove("has-error");
-  }
-
-  swatchQuestions.forEach(q=>{
-    const section = document.querySelector(`[data-field="${q.id}"]`);
-    const isRequired = q.required !== false;
-    if(isRequired && !state[q.id]){
-      section.classList.add("has-error");
-      valid = false;
-    }
-  });
-
-  if(!valid){
-    document.querySelector(".has-error").scrollIntoView({behavior:"smooth", block:"center"});
+  if(currentStep < steps.length - 1){
+    showStep(currentStep + 1);
     return;
   }
 
   const respuesta = {
-    nombre,
-    cargo,
+    nombre: document.getElementById("nombre").value.trim(),
+    cargo: document.getElementById("cargo").value,
     ...state,
     comentario: document.getElementById("comentario").value.trim()
   };
 
-  const submitBtn = form.querySelector("button.submit");
-  submitBtn.disabled = true;
+  nextBtn.disabled = true;
   try{
     const { error } = await sb.from("encuesta_uniforme_respuestas").insert([respuesta]);
     if(error) throw error;
@@ -829,10 +807,10 @@ form.addEventListener("submit", async (e)=>{
     console.error("No se pudo guardar la respuesta", err);
     submitError.style.display = "block";
     submitError.scrollIntoView({behavior:"smooth", block:"center"});
-    submitBtn.disabled = false;
+    nextBtn.disabled = false;
     return;
   }
-  submitBtn.disabled = false;
+  nextBtn.disabled = false;
 
   form.style.display = "none";
   thanks.style.display = "block";
