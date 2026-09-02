@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combuses — Selección del nuevo uniforme</title>
+<style>
+  :root{
+    --ink:#2A2A26;
+    --ink-soft:#5C5B54;
+    --paper:#EFEBE2;
+    --card:#FBF9F4;
+    --line:#D8D3C4;
+    --thread:#2F7D4F;
+    --thread-dark:#1F5936;
+    --ok:#2F7D4F;
+    --danger:#A83B2E;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Helvetica Neue", Arial, sans-serif;
+    line-height:1.5;
+    padding-bottom:4rem;
+  }
+  .wrap{
+    max-width:720px;
+    margin:0 auto;
+    padding:0 1.25rem;
+  }
+  header.hero{
+    background:var(--ink);
+    color:var(--paper);
+    padding:3rem 1.25rem 2.5rem;
+    border-bottom:6px solid var(--thread);
+  }
+  header.hero .wrap{
+    display:flex;
+    flex-direction:column;
+    gap:.6rem;
+  }
+  .tag{
+    display:inline-block;
+    width:fit-content;
+    font-size:.72rem;
+    letter-spacing:.04em;
+    color:var(--thread);
+    background:rgba(180,101,42,.15);
+    border:1px solid rgba(180,101,42,.4);
+    padding:.25rem .6rem;
+    border-radius:999px;
+  }
+  h1{
+    font-size:1.9rem;
+    margin:.2rem 0 0;
+    font-weight:700;
+    max-width:20ch;
+  }
+  header.hero p{
+    color:#D8D4C7;
+    max-width:52ch;
+    margin:.2rem 0 0;
+    font-size:.98rem;
+  }
+  form{margin-top:2.2rem;}
+  .section{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:1.4rem 1.4rem 1.6rem;
+    margin-bottom:1.1rem;
+    position:relative;
+  }
+  .section .label-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:1rem;
+    margin-bottom:.9rem;
+  }
+  .section h2{
+    font-size:1rem;
+    margin:0;
+    font-weight:700;
+  }
+  .req{
+    color:var(--thread-dark);
+    font-size:.8rem;
+  }
+  .edit-toggle{
+    font:inherit;
+    font-size:.8rem;
+    background:transparent;
+    color:var(--paper);
+    border:1px solid rgba(239,235,226,.5);
+    padding:.4rem .8rem;
+    border-radius:999px;
+    cursor:pointer;
+    align-self:flex-start;
+    margin-top:.4rem;
+  }
+  .edit-toggle:hover{border-color:var(--paper);}
+  .edit-toggle.on{
+    background:var(--thread);
+    border-color:var(--thread);
+    color:#fff;
+  }
+  .header-actions{
+    display:flex;
+    gap:.6rem;
+    flex-wrap:wrap;
+  }
+  .stats-section{display:none;}
+  .stats-section.show{display:block;}
+  .stat-total{
+    font-size:.85rem;
+    color:var(--ink-soft);
+    margin-bottom:1.2rem;
+  }
+  .stat-block{margin-bottom:1.5rem;}
+  .stat-block h3{
+    font-size:.92rem;
+    margin:0 0 .7rem;
+    font-weight:700;
+  }
+  .stat-row{
+    display:flex;
+    align-items:center;
+    gap:.6rem;
+    margin-bottom:.5rem;
+    font-size:.82rem;
+  }
+  .stat-label{
+    flex:0 0 40%;
+    color:var(--ink);
+  }
+  .stat-bar-track{
+    flex:1;
+    background:var(--line);
+    border-radius:4px;
+    overflow:hidden;
+    height:10px;
+  }
+  .stat-bar-fill{
+    height:100%;
+    background:var(--thread-dark);
+  }
+  .stat-count{
+    flex:0 0 auto;
+    min-width:64px;
+    text-align:right;
+    color:var(--ink-soft);
+  }
+  .stat-winner .stat-label{font-weight:700;}
+  .stat-winner .stat-bar-fill{background:var(--thread);}
+  .swatch-media{position:relative;}
+  .photo-edit{
+    display:none;
+    position:absolute;
+    right:8px;
+    bottom:8px;
+    background:rgba(42,42,38,.85);
+    color:#fff;
+    font-size:.72rem;
+    padding:.35rem .6rem;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  body.edit-mode .photo-edit{display:inline-block;}
+  .photo-edit input{display:none;}
+  input[type=text], select, textarea{
+    width:100%;
+    font:inherit;
+    padding:.6rem .7rem;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+    color:var(--ink);
+  }
+  textarea{min-height:90px; resize:vertical;}
+  input[type=text]:focus, select:focus, textarea:focus{
+    outline:2px solid var(--thread);
+    outline-offset:1px;
+  }
+  .swatches{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+    gap:.8rem;
+  }
+  .swatch{
+    border:2px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+    cursor:pointer;
+    background:#fff;
+    transition:border-color .15s ease;
+    display:flex;
+    flex-direction:column;
+  }
+  .swatch:hover{border-color:var(--thread);}
+  .swatch.selected{
+    border-color:var(--thread-dark);
+    box-shadow:0 0 0 1px var(--thread-dark);
+  }
+  .swatch img{
+    width:100%;
+    height:190px;
+    object-fit:cover;
+    display:block;
+    background:#e9e6dc;
+  }
+  .swatch .cap{
+    padding:.6rem .7rem;
+    font-size:.85rem;
+    display:flex;
+    align-items:flex-start;
+    gap:.5rem;
+  }
+  .swatch .dot{
+    width:14px;height:14px;
+    border-radius:50%;
+    border:2px solid var(--ink-soft);
+    flex:0 0 auto;
+    margin-top:.15rem;
+    position:relative;
+  }
+  .swatch.selected .dot{border-color:var(--thread-dark);}
+  .swatch.selected .dot::after{
+    content:"";
+    position:absolute;
+    inset:2px;
+    border-radius:50%;
+    background:var(--thread-dark);
+  }
+  .yesno{
+    display:flex;
+    gap:.6rem;
+  }
+  .yesno button{
+    flex:1;
+    font:inherit;
+    padding:.6rem;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .yesno button.selected{
+    background:var(--ink);
+    color:var(--paper);
+    border-color:var(--ink);
+  }
+  .clear-link{
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    font-size:.78rem;
+    text-decoration:underline;
+    cursor:pointer;
+    padding:0;
+    margin-top:.5rem;
+  }
+  .err{
+    color:var(--danger);
+    font-size:.82rem;
+    margin-top:.5rem;
+    display:none;
+  }
+  .section.has-error{border-color:var(--danger);}
+  .section.has-error .err{display:block;}
+  .submit-row{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    margin-top:1.4rem;
+  }
+  button.submit{
+    font:inherit;
+    font-weight:700;
+    background:var(--thread-dark);
+    color:#fff;
+    border:none;
+    padding:.85rem 1.6rem;
+    border-radius:8px;
+    cursor:pointer;
+  }
+  button.submit:hover{background:var(--thread);}
+  .count{
+    font-size:.82rem;
+    color:var(--ink-soft);
+  }
+  .thanks{
+    display:none;
+    background:var(--ok);
+    color:#fff;
+    border-radius:var(--radius);
+    padding:1.6rem 1.4rem;
+    margin-top:1.4rem;
+  }
+  .thanks h2{margin:0 0 .4rem; font-size:1.1rem;}
+  .thanks p{margin:0; font-size:.9rem; opacity:.9;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">Combuses</span>
+    <h1>Tú eliges — el nuevo uniforme</h1>
+    <p>Queremos que la nueva dotación te represente. Revisa cada opción y marca la que más se ajuste a tu gusto y a tu jornada de trabajo.</p>
+    <div class="header-actions">
+      <button type="button" class="edit-toggle" id="editToggle">Cambiar fotos</button>
+      <button type="button" class="edit-toggle" id="statsToggle">Ver estadísticas</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <form id="survey">
+
+    <div class="section" data-field="nombre">
+      <div class="label-row"><h2>Nombre completo</h2><span class="req">Obligatorio</span></div>
+      <input type="text" id="nombre" placeholder="Escribe tu nombre completo">
+      <p class="err">Escribe tu nombre completo.</p>
+    </div>
+
+    <div class="section" data-field="cargo">
+      <div class="label-row"><h2>Cargo</h2><span class="req">Obligatorio</span></div>
+      <select id="cargo">
+        <option value="" selected disabled>Selecciona una opción</option>
+        <option value="ADMINISTRATIVO">Administrativo</option>
+        <option value="OPERATIVO">Operativo</option>
+      </select>
+      <p class="err">Selecciona tu cargo.</p>
+    </div>
+
+    <div id="swatch-sections"></div>
+
+    <div id="yesno-sections"></div>
+
+    <div class="section" data-field="comentario">
+      <div class="label-row"><h2>¿Qué opinas?</h2></div>
+      <textarea id="comentario" placeholder="Cuéntanos qué piensas o si tienes alguna propuesta"></textarea>
+    </div>
+
+    <p class="err" id="submitError">No se pudo enviar tu respuesta. Revisa tu conexión e inténtalo de nuevo.</p>
+    <div class="submit-row">
+      <button type="submit" class="submit">Enviar respuesta</button>
+      <span class="count" id="count"></span>
+    </div>
+  </form>
+
+  <div class="thanks" id="thanks">
+    <h2>Gracias por participar</h2>
+    <p>Tu respuesta quedó registrada. Tu opinión nos ayuda a elegir el uniforme con el que te vas a sentir más a gusto.</p>
+  </div>
+
+  <div class="stats-section" id="statsSection">
+    <p class="stat-total" id="statTotal"></p>
+    <div id="statBlocks"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL = "https://cbplebkmxrkaafqdhiyi.supabase.co";
+const SUPABASE_KEY = "sb_publishable_DZCceNTENY4ViP17-eZrGg_bdMElZ9X";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const FOTOS_BUCKET = "encuesta-uniforme-fotos";
+
+const swatchQuestions = [
+  {
+    id: "uniforme_admin_dama",
+    title: "Uniforme administrativo — dama",
+    options: [
+      { label: "Camisa Oxford gris / jean negro / tenis negros", img: "https://docs.google.com/forms-images-rt/ANbbkii5r22LPVlJcP-9jCkYY9DAsQAW7GnxCl3ma3aebRBQQQnAsnEVnrucWe0oWa6sHNumjkGMSupT7HBYBw7rfZ_zJa9LMe_bUGU05nKHO2dD1XiaYWHetda-FaH5dwQ3OxykIz4DheH7Jp-LIjI8Qv5b4iYGnA87fX7OlTHWhPBw5c636rnYXwyyYx6KyiBltMgjhFPQ=w739" },
+      { label: "Camisa Oxford azul / jean azul / tenis negros", img: "https://docs.google.com/forms-images-rt/ANbbkii5r22LPVlJcP-9jCkYY9DAsQAW7GnxCl3ma3aebRBQQQnAsnEVnrucWe0oWa6sHNumjkGMSupT7HBYBw7rfZ_zJa9LMe_bUGU05nKHO2dD1XiaYWHetda-FaH5dwQ3OxykIz4DheH7Jp-LIjI8Qv5b4iYGnA87fX7OlTHWhPBw5c636rnYXwyyYx6KyiBltMgjhFPQ=w739" }
+    ]
+  },
+  {
+    id: "uniforme_admin_hombre",
+    title: "Uniforme administrativo — hombre",
+    options: [
+      { label: "Camisa Oxford gris / jean negro / tenis negros", img: "https://docs.google.com/forms-images-rt/ANbbkijjR1KDiUxlmLbyopgfcYrgdlWGtEaEbYKHY-glEPwMejRuVvJnM9bfqBB9xtb-4aqP1X4eJee6Qp0B9CnAFBVQvbl-nJKkpMPKUJX9WNeRM8QQJzFSUCSCQ0fk7-b2nemBpmKBlKTmB7G_8LasmltlDLVQv2aStDIfCEyucdhnUvW3jae-d0jc294mEk9MjaTYVfIr=w740" },
+      { label: "Camisa Oxford azul / jean azul / tenis negros", img: "https://docs.google.com/forms-images-rt/ANbbkijjR1KDiUxlmLbyopgfcYrgdlWGtEaEbYKHY-glEPwMejRuVvJnM9bfqBB9xtb-4aqP1X4eJee6Qp0B9CnAFBVQvbl-nJKkpMPKUJX9WNeRM8QQJzFSUCSCQ0fk7-b2nemBpmKBlKTmB7G_8LasmltlDLVQv2aStDIfCEyucdhnUvW3jae-d0jc294mEk9MjaTYVfIr=w740" }
+    ]
+  },
+  {
+    id: "uniforme_conductores_aeropuerto",
+    title: "Uniforme unisex conductores(as) — Aeropuerto",
+    options: [
+      { label: "Camisa con charreteras gris / pantalón lino negro / zapatos", img: "https://docs.google.com/forms-images-rt/ANbbkihyQ4sHQKq_jjCWftxHTiyCycW0oB5T7G9Chc8Ik2eq4CEKvHY4HlVF3zEZDfDwAmClnrkxiarhD93U__nI__-ZC_MpqJh6KzMIarpW3fJ2_3OchhkTHW--haRkcViuOnB1fqkE9qxxmzNV3HoccAwiK4Ppf1AfVJgd9peyUb6PV4h926JlkVJIEhcPZfbG5MogjzzoJYg=w740" },
+      { label: "Camisa con charreteras azul / pantalón lino azul / zapatos", img: "https://docs.google.com/forms-images-rt/ANbbkihyQ4sHQKq_jjCWftxHTiyCycW0oB5T7G9Chc8Ik2eq4CEKvHY4HlVF3zEZDfDwAmClnrkxiarhD93U__nI__-ZC_MpqJh6KzMIarpW3fJ2_3OchhkTHW--haRkcViuOnB1fqkE9qxxmzNV3HoccAwiK4Ppf1AfVJgd9peyUb6PV4h926JlkVJIEhcPZfbG5MogjzzoJYg=w740" }
+    ]
+  },
+  {
+    id: "uniforme_conductores_urbano",
+    title: "Uniforme unisex conductores(as) — Urbano",
+    options: [
+      { label: "Camiseta polo azul marino / jean stretch / tenis", img: "https://docs.google.com/forms-images-rt/ANbbkiij0GPOV6w_BOvFAUUGWazpVA-nRO0MTWsIiSxDjvpuGUAaQVs9Xm69loVB_dimH-8EmCUjAxzzZaPM5kFDvSydEEbyfEQ-1fDN90jLyFHhqbskVtuFfDCdVLguiBFcS8b35SQR9dvyb9B7yrqWRzIHy_alHpsPrVdmWOcg3aaCi-MtuKagCByNYW-523ddO15vJYSI=w740" },
+      { label: "Camiseta polo verde / jean stretch / tenis", img: "https://docs.google.com/forms-images-rt/ANbbkiij0GPOV6w_BOvFAUUGWazpVA-nRO0MTWsIiSxDjvpuGUAaQVs9Xm69loVB_dimH-8EmCUjAxzzZaPM5kFDvSydEEbyfEQ-1fDN90jLyFHhqbskVtuFfDCdVLguiBFcS8b35SQR9dvyb9B7yrqWRzIHy_alHpsPrVdmWOcg3aaCi-MtuKagCByNYW-523ddO15vJYSI=w740" }
+    ]
+  },
+  {
+    id: "uniforme_gestores_1",
+    title: "Uniforme unisex gestores(as) — modelo 1",
+    options: [
+      { label: "Polo logo frente izquierdo / drill beige / tenis", img: "https://docs.google.com/forms-images-rt/ANbbkijSUdvMfuersJ6-PY-5_jEaKYH640mdfXqXoImkjHuKwgAHiQdfiOpuCMuwFRlaAmcXI2Ng1rXsdowPqOQuWF4XN3u8GH-JUmbRyKgG3An2xu8amixBd1xAno19RGpFwse3zPL9PLHSnCi5m-02AgJ05i_yckGMEMqu7xGa7Cad6u0urzYEVpfXNKVqD6NElmutIP3A0eo=w740" },
+      { label: "Polo logo frente y espalda / drill azul / tenis", img: "https://docs.google.com/forms-images-rt/ANbbkijSUdvMfuersJ6-PY-5_jEaKYH640mdfXqXoImkjHuKwgAHiQdfiOpuCMuwFRlaAmcXI2Ng1rXsdowPqOQuWF4XN3u8GH-JUmbRyKgG3An2xu8amixBd1xAno19RGpFwse3zPL9PLHSnCi5m-02AgJ05i_yckGMEMqu7xGa7Cad6u0urzYEVpfXNKVqD6NElmutIP3A0eo=w740" },
+      { label: "Polo gris / drill negro / tenis", img: "https://docs.google.com/forms-images-rt/ANbbkijSUdvMfuersJ6-PY-5_jEaKYH640mdfXqXoImkjHuKwgAHiQdfiOpuCMuwFRlaAmcXI2Ng1rXsdowPqOQuWF4XN3u8GH-JUmbRyKgG3An2xu8amixBd1xAno19RGpFwse3zPL9PLHSnCi5m-02AgJ05i_yckGMEMqu7xGa7Cad6u0urzYEVpfXNKVqD6NElmutIP3A0eo=w740" }
+    ]
+  },
+  {
+    id: "uniforme_gestores_2",
+    title: "Uniforme unisex gestores(as) — modelo 2",
+    options: [
+      { label: "Polo logo frente izquierdo / drill beige / tenis", img: "https://docs.google.com/forms-images-rt/ANbbkihjCrNDvtVIy8fIRy2Nbo-YkUkuzdTzHrBeK852Z9o0yOYZXibmBrLoBrIXQBjY039XPCfIe9Ns-N9wgaHsSaSYxKgtN0AZb8ClYyXFYbpRQ47982TASa1SMEOrVzNO_KOvg5CcstgBOLQN19ran0PRvmXJ1-0k6DolWHfmiJ9DWx3Z59y59ro1dXQQ2rX6zkWnRqOrPl0=w740" },
+      { label: "Polo logo frente y espalda / drill azul / tenis", img: "https://docs.google.com/forms-images-rt/ANbbkihjCrNDvtVIy8fIRy2Nbo-YkUkuzdTzHrBeK852Z9o0yOYZXibmBrLoBrIXQBjY039XPCfIe9Ns-N9wgaHsSaSYxKgtN0AZb8ClYyXFYbpRQ47982TASa1SMEOrVzNO_KOvg5CcstgBOLQN19ran0PRvmXJ1-0k6DolWHfmiJ9DWx3Z59y59ro1dXQQ2rX6zkWnRqOrPl0=w740" },
+      { label: "Polo gris / drill negro / tenis", img: "https://docs.google.com/forms-images-rt/ANbbkihjCrNDvtVIy8fIRy2Nbo-YkUkuzdTzHrBeK852Z9o0yOYZXibmBrLoBrIXQBjY039XPCfIe9Ns-N9wgaHsSaSYxKgtN0AZb8ClYyXFYbpRQ47982TASa1SMEOrVzNO_KOvg5CcstgBOLQN19ran0PRvmXJ1-0k6DolWHfmiJ9DWx3Z59y59ro1dXQQ2rX6zkWnRqOrPl0=w740" }
+    ]
+  },
+  {
+    id: "chaqueta",
+    title: "Chaqueta unisex",
+    img: "https://docs.google.com/forms-images-rt/ANbbkiiPGdHsjl-AYQhZkttzBq5JMcD61wtlWnf7kz2txW14YStfCAFoTwaB980Q1YRHjjDSjeeGqY5w4m2tmnz5kvknpViz-eWWHtJUCciZx3pCkV9vkjsO_XWFPAuf0d0VssCQV0uT97AAnCiAFlaZgulRkbgBsE_J0nCTxyyQ5dYdpuEAeJlTwahxjAU_YKcgJJWz0bOmXoU=w740",
+    yesno: true
+  },
+  {
+    id: "tenis_unisex",
+    title: "Tenis unisex",
+    img: "https://docs.google.com/forms-images-rt/ANbbkij3plFdL-e1YI7ppNMwC_UYQm_dhKnpfdZwSHS-OTynxbPNOi7Y_X5v7Q6qNjVtibB0ZKOHf2f_cT5n5_mDpwUDdRv7CBbQC9ZqlkZzZ0S7mf0w-SYFiGhTeRBVPyUbPHneOMw0SUKvojiKw-37nKIjizNI-S5GLrsWg-S1pipIDThbJH0NccJ7-1FMJJsGrO2K2aTkXeA=w569",
+    yesno: true,
+    required: false
+  },
+  {
+    id: "zapato_clasico_hombre",
+    title: "Zapato clásico de hombre",
+    img: "https://docs.google.com/forms-images-rt/ANbbkijnjF_j8P0H5l_0F-OKFTZgs1lgZIVGowvp1h3S84G7hnl1P1s_x1UAW4AL6Dp6sdoHtiZdvJKGqjMhalaSJnKmyJySAQEfLpcspFboi9imPAJ3hE0Hg0uq6f2IWxJNdq8iw7bPBn-mHB0mL44thlGp2gYXGvNvxgoNbYNJtiMCoqAIbiZw-9rjAuMQhRN4Uvu0Qmh5UOI=w579",
+    yesno: true,
+    required: false
+  },
+  {
+    id: "tenis_urbano",
+    title: "Tenis urbano",
+    img: "https://docs.google.com/forms-images-rt/ANbbkiiFWtFP9NTixyIUMsGZ4nbhkkn28EWUnqjzsPxM9wDc7ZIMy1hSlkAjUl6N55RGba4bMJs5FqRNbf7MaPuT4UmIcWGqGzLRoQtaTNFoOfnedum6sIopEh56oxFNMgx9EZdC_9CsesIkjITRuc5oZmm_S9wE3yRE0kQ6G8masu6hogeg-mTwEcpbcPmvV8LFkJMHFQY8Cck=w740",
+    yesno: true,
+    required: false
+  },
+  {
+    id: "botas_cuero_hombre",
+    title: "Botas de cuero hombre",
+    img: "https://docs.google.com/forms-images-rt/ANbbkigEgR5POb2EF57uXX3jT_8niBFE0sbtooPfJKtHIoTztYwLxnA8ykbCIfDKdbvRvfb1pHpzMAxKn7hfBmi51-rAsN95EKQaIiU71JPjdZr_pT_mwA5rB7r8lWLcrVRPVez8-M6OrN2Lx14Dr5JwEldKwuY-KuBpjdETyPTiaytreatU8mDDqarNJJAriap-JxCfrBHJyCA=w740",
+    options2: ["Opción 1", "Opción 2"],
+    required: false
+  }
+];
+
+const state = {};
+const swatchHost = document.getElementById("swatch-sections");
+const yesnoHost = document.getElementById("yesno-sections");
+
+function compressImage(file, maxWidth){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const scale = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob)=>{
+          if(!blob){ reject(new Error("No se pudo comprimir la imagen")); return; }
+          resolve({ dataUrl: canvas.toDataURL("image/jpeg", 0.82), blob });
+        }, "image/jpeg", 0.82);
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function makeMedia(imgSrc, altText, photoKey){
+  const media = document.createElement("div");
+  media.className = "swatch-media";
+  const img = document.createElement("img");
+  img.src = imgSrc;
+  img.alt = altText;
+  img.loading = "lazy";
+  img.dataset.photokey = photoKey;
+  media.appendChild(img);
+
+  const label = document.createElement("label");
+  label.className = "photo-edit";
+  label.textContent = "Cambiar foto";
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.addEventListener("click", (ev)=> ev.stopPropagation());
+  input.addEventListener("change", async (ev)=>{
+    ev.stopPropagation();
+    const file = ev.target.files[0];
+    if(!file) return;
+    try{
+      const { dataUrl, blob } = await compressImage(file, 900);
+      img.src = dataUrl;
+      const path = `${photoKey}.jpg`;
+      const { error } = await supabase.storage.from(FOTOS_BUCKET).upload(path, blob, {
+        upsert: true,
+        contentType: "image/jpeg"
+      });
+      if(error) throw error;
+      const { data } = supabase.storage.from(FOTOS_BUCKET).getPublicUrl(path);
+      img.src = data.publicUrl + "?t=" + Date.now();
+    }catch(err){
+      console.error("No se pudo guardar la foto", err);
+    }
+  });
+  label.addEventListener("click", (ev)=> ev.stopPropagation());
+  label.appendChild(input);
+  media.appendChild(label);
+
+  return media;
+}
+
+async function applyCustomPhotos(){
+  try{
+    const { data: files, error } = await supabase.storage.from(FOTOS_BUCKET).list("", { limit: 1000 });
+    if(error) throw error;
+    if(!files) return;
+    for(const file of files){
+      const photoKey = file.name.replace(/\.jpg$/, "");
+      const imgEl = document.querySelector(`img[data-photokey="${photoKey}"]`);
+      if(!imgEl) continue;
+      const { data } = supabase.storage.from(FOTOS_BUCKET).getPublicUrl(file.name);
+      imgEl.src = data.publicUrl + "?t=" + (file.updated_at ? Date.parse(file.updated_at) : Date.now());
+    }
+  }catch(e){
+    console.error("No se pudieron cargar fotos personalizadas", e);
+  }
+}
+
+const editToggle = document.getElementById("editToggle");
+editToggle.addEventListener("click", ()=>{
+  const on = document.body.classList.toggle("edit-mode");
+  editToggle.classList.toggle("on", on);
+  editToggle.textContent = on ? "Listo" : "Cambiar fotos";
+});
+
+const statTitles = [
+  { id: "cargo", title: "Cargo", options: ["ADMINISTRATIVO", "OPERATIVO"] },
+  ...swatchQuestions.map(q=>({
+    id: q.id,
+    title: q.title,
+    options: q.options ? q.options.map(o=>o.label)
+      : q.options2 ? q.options2
+      : ["Sí","No"]
+  }))
+];
+
+const statsSection = document.getElementById("statsSection");
+const statTotal = document.getElementById("statTotal");
+const statBlocks = document.getElementById("statBlocks");
+const statsToggle = document.getElementById("statsToggle");
+
+async function renderStats(){
+  statBlocks.innerHTML = "";
+  statTotal.textContent = "Cargando respuestas…";
+  let total = 0;
+  let rows = [];
+  try{
+    const [{ data: totalData, error: totalError }, { data: statsData, error: statsError }] = await Promise.all([
+      supabase.rpc("encuesta_uniforme_total_respuestas"),
+      supabase.rpc("encuesta_uniforme_estadisticas")
+    ]);
+    if(totalError) throw totalError;
+    if(statsError) throw statsError;
+    total = Number(totalData) || 0;
+    rows = statsData || [];
+  }catch(e){
+    console.error("No se pudieron cargar las estadísticas", e);
+    statTotal.textContent = "No se pudieron cargar las estadísticas.";
+    return;
+  }
+
+  statTotal.textContent = total + " respuesta" + (total === 1 ? "" : "s") + " registrada" + (total === 1 ? "" : "s");
+
+  if(total === 0){
+    return;
+  }
+
+  const countsByQuestion = {};
+  rows.forEach(r=>{
+    if(!countsByQuestion[r.pregunta]) countsByQuestion[r.pregunta] = {};
+    countsByQuestion[r.pregunta][r.opcion] = Number(r.conteo);
+  });
+
+  statTitles.forEach(q=>{
+    const counts = {};
+    q.options.forEach(o=> counts[o] = 0);
+    const fetched = countsByQuestion[q.id] || {};
+    Object.entries(fetched).forEach(([opcion, conteo])=>{
+      counts[opcion] = conteo;
+    });
+
+    const entries = Object.entries(counts).sort((a,b)=> b[1]-a[1]);
+    const max = Math.max(1, ...entries.map(e=>e[1]));
+
+    const block = document.createElement("div");
+    block.className = "stat-block";
+    const h3 = document.createElement("h3");
+    h3.textContent = q.title;
+    block.appendChild(h3);
+
+    entries.forEach(([label, count], i)=>{
+      const row = document.createElement("div");
+      row.className = "stat-row" + (i === 0 && count > 0 ? " stat-winner" : "");
+      const pct = total ? Math.round((count / total) * 100) : 0;
+      row.innerHTML = `
+        <span class="stat-label">${label}</span>
+        <span class="stat-bar-track"><span class="stat-bar-fill" style="width:${(count/max)*100}%"></span></span>
+        <span class="stat-count">${count} · ${pct}%</span>
+      `;
+      block.appendChild(row);
+    });
+
+    statBlocks.appendChild(block);
+  });
+}
+
+statsToggle.addEventListener("click", async ()=>{
+  const showing = statsSection.classList.toggle("show");
+  statsToggle.classList.toggle("on", showing);
+  statsToggle.textContent = showing ? "Ver formulario" : "Ver estadísticas";
+  form.style.display = showing ? "none" : "block";
+  thanks.style.display = "none";
+  if(showing){
+    await renderStats();
+  }
+});
+
+function buildSwatchSection(q){
+  const isMulti = !!q.options;
+  const section = document.createElement("div");
+  section.className = "section";
+  section.dataset.field = q.id;
+  section.dataset.required = q.required === false ? "false" : "true";
+
+  const row = document.createElement("div");
+  row.className = "label-row";
+  row.innerHTML = `<h2>${q.title}</h2>` + (q.required === false ? "" : `<span class="req">Obligatorio</span>`);
+  section.appendChild(row);
+
+  if(isMulti){
+    const grid = document.createElement("div");
+    grid.className = "swatches";
+    q.options.forEach((opt, i)=>{
+      const card = document.createElement("div");
+      card.className = "swatch";
+      card.appendChild(makeMedia(opt.img, opt.label, `${q.id}__${i}`));
+      const cap = document.createElement("div");
+      cap.className = "cap";
+      cap.innerHTML = `<span class="dot"></span><span>${opt.label}</span>`;
+      card.appendChild(cap);
+      card.addEventListener("click", ()=>{
+        grid.querySelectorAll(".swatch").forEach(s=>s.classList.remove("selected"));
+        card.classList.add("selected");
+        state[q.id] = opt.label;
+        section.classList.remove("has-error");
+      });
+      grid.appendChild(card);
+    });
+    section.appendChild(grid);
+  } else if(q.options2){
+    const grid = document.createElement("div");
+    grid.className = "swatches";
+    const card = document.createElement("div");
+    card.className = "swatch";
+    card.style.gridColumn = "1 / -1";
+    card.appendChild(makeMedia(q.img, q.title, `${q.id}__0`));
+    grid.appendChild(card);
+    section.appendChild(grid);
+
+    const yn = document.createElement("div");
+    yn.className = "yesno";
+    yn.style.marginTop = ".8rem";
+    q.options2.forEach(label=>{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = label;
+      btn.addEventListener("click", ()=>{
+        yn.querySelectorAll("button").forEach(b=>b.classList.remove("selected"));
+        btn.classList.add("selected");
+        state[q.id] = label;
+        section.classList.remove("has-error");
+      });
+      yn.appendChild(btn);
+    });
+    section.appendChild(yn);
+  } else {
+    const grid = document.createElement("div");
+    grid.className = "swatches";
+    const card = document.createElement("div");
+    card.className = "swatch";
+    card.style.gridColumn = "1 / -1";
+    card.appendChild(makeMedia(q.img, q.title, `${q.id}__0`));
+    grid.appendChild(card);
+    section.appendChild(grid);
+
+    const yn = document.createElement("div");
+    yn.className = "yesno";
+    yn.style.marginTop = ".8rem";
+    ["Sí","No"].forEach(label=>{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = label;
+      btn.addEventListener("click", ()=>{
+        yn.querySelectorAll("button").forEach(b=>b.classList.remove("selected"));
+        btn.classList.add("selected");
+        state[q.id] = label;
+        section.classList.remove("has-error");
+      });
+      yn.appendChild(btn);
+    });
+    section.appendChild(yn);
+
+    if(q.required === false){
+      const clear = document.createElement("button");
+      clear.type = "button";
+      clear.className = "clear-link";
+      clear.textContent = "Borrar selección";
+      clear.addEventListener("click", ()=>{
+        yn.querySelectorAll("button").forEach(b=>b.classList.remove("selected"));
+        delete state[q.id];
+      });
+      section.appendChild(clear);
+    }
+  }
+
+  const err = document.createElement("p");
+  err.className = "err";
+  err.textContent = "Selecciona una opción.";
+  section.appendChild(err);
+
+  return section;
+}
+
+swatchQuestions.forEach(q=>{
+  swatchHost.appendChild(buildSwatchSection(q));
+});
+applyCustomPhotos();
+
+const form = document.getElementById("survey");
+const thanks = document.getElementById("thanks");
+const countEl = document.getElementById("count");
+const submitError = document.getElementById("submitError");
+
+async function refreshCount(){
+  try{
+    const { data, error } = await supabase.rpc("encuesta_uniforme_total_respuestas");
+    if(error) throw error;
+    const n = Number(data) || 0;
+    countEl.textContent = n + " respuesta" + (n === 1 ? "" : "s") + " registrada" + (n === 1 ? "" : "s") + " hasta ahora";
+  }catch(e){
+    console.error("No se pudo obtener el conteo de respuestas", e);
+    countEl.textContent = "";
+  }
+}
+refreshCount();
+
+form.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  submitError.style.display = "none";
+  let valid = true;
+
+  const nombreSection = document.querySelector('[data-field="nombre"]');
+  const nombre = document.getElementById("nombre").value.trim();
+  if(!nombre){
+    nombreSection.classList.add("has-error");
+    valid = false;
+  } else {
+    nombreSection.classList.remove("has-error");
+  }
+
+  const cargoSection = document.querySelector('[data-field="cargo"]');
+  const cargo = document.getElementById("cargo").value;
+  if(!cargo){
+    cargoSection.classList.add("has-error");
+    valid = false;
+  } else {
+    cargoSection.classList.remove("has-error");
+  }
+
+  swatchQuestions.forEach(q=>{
+    const section = document.querySelector(`[data-field="${q.id}"]`);
+    const isRequired = q.required !== false;
+    if(isRequired && !state[q.id]){
+      section.classList.add("has-error");
+      valid = false;
+    }
+  });
+
+  if(!valid){
+    document.querySelector(".has-error").scrollIntoView({behavior:"smooth", block:"center"});
+    return;
+  }
+
+  const respuesta = {
+    nombre,
+    cargo,
+    ...state,
+    comentario: document.getElementById("comentario").value.trim()
+  };
+
+  const submitBtn = form.querySelector("button.submit");
+  submitBtn.disabled = true;
+  try{
+    const { error } = await supabase.from("encuesta_uniforme_respuestas").insert([respuesta]);
+    if(error) throw error;
+  }catch(err){
+    console.error("No se pudo guardar la respuesta", err);
+    submitError.style.display = "block";
+    submitError.scrollIntoView({behavior:"smooth", block:"center"});
+    submitBtn.disabled = false;
+    return;
+  }
+  submitBtn.disabled = false;
+
+  form.style.display = "none";
+  thanks.style.display = "block";
+  thanks.scrollIntoView({behavior:"smooth", block:"start"});
+  refreshCount();
+});
+</script>
+
+</body>
+</html>
