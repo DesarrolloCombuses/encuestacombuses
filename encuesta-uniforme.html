@@ -346,6 +346,30 @@
   }
   .nav-btn.next:hover{background:var(--brand-light);}
   .nav-btn.next:disabled{opacity:.6; cursor:default; box-shadow:none;}
+  .already{
+    display:none;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:1.6rem;
+    margin-top:1.4rem;
+    box-shadow:0 1px 2px rgba(20,25,45,.04), 0 10px 30px rgba(20,25,45,.06);
+  }
+  .already.show{display:block;}
+  .already h2{margin:0 0 .4rem; font-size:1.15rem; font-weight:800; letter-spacing:-.01em;}
+  .already p{margin:0 0 1.1rem; font-size:.92rem; color:var(--ink-soft);}
+  .ghost-btn{
+    font:inherit;
+    font-weight:700;
+    font-size:.88rem;
+    background:#fff;
+    border:1.5px solid var(--brand);
+    color:var(--brand-dark);
+    padding:.7rem 1.1rem;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .ghost-btn:hover{background:var(--panel);}
   .suggestions{
     display:none;
     margin-top:1.4rem;
@@ -436,6 +460,13 @@
       <p class="err">Escribe tu nombre completo.</p>
     </div>
 
+    <div class="section" data-field="cedula">
+      <div class="label-row"><h2>Número de cédula</h2><span class="req">Obligatorio</span></div>
+      <p class="hint">Solo la usamos para evitar respuestas repetidas. No aparece en las sugerencias ni en los resultados.</p>
+      <input type="text" id="cedula" inputmode="numeric" autocomplete="off" placeholder="Solo números, sin puntos">
+      <p class="err">Escribe un número de cédula válido (entre 6 y 12 dígitos).</p>
+    </div>
+
     <div class="section" data-field="cargo">
       <div class="label-row"><h2>Cargo</h2><span class="req">Obligatorio</span></div>
       <select id="cargo">
@@ -460,6 +491,12 @@
       <button type="submit" class="nav-btn next" id="nextBtn">Siguiente</button>
     </div>
   </form>
+
+  <div class="already" id="already">
+    <h2>Ya respondiste desde este dispositivo</h2>
+    <p id="alreadyTexto">Tu respuesta quedó registrada. Gracias por participar.</p>
+    <button type="button" class="ghost-btn" id="otraPersona">Soy otra persona, quiero responder</button>
+  </div>
 
   <div class="thanks" id="thanks">
     <h2>Gracias por participar</h2>
@@ -764,12 +801,14 @@ statsToggle.addEventListener("click", async ()=>{
   const showing = statsSection.classList.toggle("show");
   statsToggle.classList.toggle("on", showing);
   statsToggle.textContent = showing ? "Ver formulario" : "Ver estadísticas";
-  form.style.display = showing ? "none" : "block";
+  form.style.display = (showing || bloqueadoPorDispositivo) ? "none" : "block";
   thanks.style.display = "none";
   if(showing){
+    already.classList.remove("show");
     await Promise.all([renderStats(), renderSugerencias()]);
   }else{
     sugerenciasSection.classList.remove("show");
+    if(bloqueadoPorDispositivo) already.classList.add("show");
   }
 });
 
@@ -896,12 +935,42 @@ const progressLabel = document.getElementById("progressLabel");
 const backBtn = document.getElementById("backBtn");
 const nextBtn = document.getElementById("nextBtn");
 
+const already = document.getElementById("already");
+const alreadyTexto = document.getElementById("alreadyTexto");
+const otraPersona = document.getElementById("otraPersona");
+const MARCA_LOCAL = "encuesta_uniforme_respondido";
+
 const steps = Array.from(form.querySelectorAll(".section"));
 let currentStep = 0;
+let bloqueadoPorDispositivo = false;
+
+function soloDigitos(v){
+  return (v || "").replace(/[^0-9]/g, "");
+}
+
+function leerMarca(){
+  try{
+    return JSON.parse(localStorage.getItem(MARCA_LOCAL) || "null");
+  }catch(e){
+    return null;
+  }
+}
+
+function guardarMarca(cedula){
+  try{
+    localStorage.setItem(MARCA_LOCAL, JSON.stringify({ cedula: cedula, fecha: new Date().toISOString() }));
+  }catch(e){
+    console.warn("No se pudo recordar la respuesta en este dispositivo", e);
+  }
+}
 
 function stepIsValid(section){
   const field = section.dataset.field;
   if(field === "nombre") return document.getElementById("nombre").value.trim().length > 0;
+  if(field === "cedula"){
+    const v = soloDigitos(document.getElementById("cedula").value);
+    return v.length >= 6 && v.length <= 12;
+  }
   if(field === "cargo") return !!document.getElementById("cargo").value;
   if(field === "comentario") return true;
   const q = swatchQuestions.find(q=> q.id === field);
@@ -942,6 +1011,26 @@ async function refreshCount(){
 refreshCount();
 showStep(0);
 
+const marcaPrevia = leerMarca();
+if(marcaPrevia){
+  bloqueadoPorDispositivo = true;
+  form.style.display = "none";
+  const cuando = formatFecha(marcaPrevia.fecha);
+  alreadyTexto.textContent = cuando
+    ? "Registramos tu respuesta el " + cuando + ". Gracias por participar."
+    : "Tu respuesta quedó registrada. Gracias por participar.";
+  already.classList.add("show");
+  renderSugerencias();
+}
+
+otraPersona.addEventListener("click", ()=>{
+  bloqueadoPorDispositivo = false;
+  already.classList.remove("show");
+  sugerenciasSection.classList.remove("show");
+  form.style.display = "block";
+  showStep(0);
+});
+
 form.addEventListener("submit", async (e)=>{
   e.preventDefault();
   submitError.style.display = "none";
@@ -961,6 +1050,7 @@ form.addEventListener("submit", async (e)=>{
 
   const respuesta = {
     nombre: document.getElementById("nombre").value.trim(),
+    cedula: soloDigitos(document.getElementById("cedula").value),
     cargo: document.getElementById("cargo").value,
     ...state,
     comentario: document.getElementById("comentario").value.trim()
@@ -972,12 +1062,20 @@ form.addEventListener("submit", async (e)=>{
     if(error) throw error;
   }catch(err){
     console.error("No se pudo guardar la respuesta", err);
+    const repetida = err && (err.code === "23505" ||
+      String(err.message || "").indexOf("encuesta_uniforme_cedula_unica") !== -1);
+    submitError.textContent = repetida
+      ? "Esta cédula ya tiene una respuesta registrada. Si crees que es un error, comunícate con Gestión Humana."
+      : "No se pudo enviar tu respuesta. Revisa tu conexión e inténtalo de nuevo.";
     submitError.style.display = "block";
     submitError.scrollIntoView({behavior:"smooth", block:"center"});
     nextBtn.disabled = false;
     return;
   }
   nextBtn.disabled = false;
+
+  guardarMarca(respuesta.cedula);
+  bloqueadoPorDispositivo = true;
 
   form.style.display = "none";
   thanks.style.display = "block";

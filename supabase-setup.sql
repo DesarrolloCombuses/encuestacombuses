@@ -140,3 +140,27 @@ as $$
 $$;
 
 grant execute on function public.encuesta_uniforme_sugerencias() to anon, authenticated;
+
+-- 5. Control de respuestas repetidas -----------------------------------------
+-- La cedula es el control real: vive en el servidor, asi que funciona aunque
+-- la persona cambie de dispositivo, de navegador o entre en modo incognito.
+alter table public.encuesta_uniforme_respuestas
+  add column if not exists cedula text;
+
+-- Formato valido: entre 6 y 12 digitos una vez quitados puntos y espacios.
+alter table public.encuesta_uniforme_respuestas
+  drop constraint if exists encuesta_uniforme_cedula_formato;
+alter table public.encuesta_uniforme_respuestas
+  add constraint encuesta_uniforme_cedula_formato
+  check (cedula is null or regexp_replace(cedula, '[^0-9]', '', 'g') ~ '^[0-9]{6,12}$');
+
+-- Unicidad sobre la cedula normalizada, para que "1.098.765" y "1098765"
+-- cuenten como la misma persona. Las respuestas anteriores a este cambio
+-- tienen cedula null y no estorban: en Postgres los null no chocan entre si
+-- dentro de un indice unico.
+create unique index if not exists encuesta_uniforme_cedula_unica
+  on public.encuesta_uniforme_respuestas ((regexp_replace(cedula, '[^0-9]', '', 'g')))
+  where cedula is not null;
+
+-- Nota: encuesta_uniforme_sugerencias() y encuesta_uniforme_estadisticas()
+-- NO exponen la cedula, y asi debe quedarse.
