@@ -120,3 +120,23 @@ create policy "encuesta_uniforme_fotos_lectura"
   for select
   to anon, authenticated
   using (bucket_id = 'encuesta-uniforme-fotos');
+
+-- 4. Sugerencias visibles para todos -----------------------------------------
+-- La tabla sigue sin política de SELECT (nadie puede leer las respuestas
+-- completas con la clave publicable). Esta función security definer expone
+-- únicamente el nombre, el comentario y la fecha de quienes sí escribieron
+-- algo, para poder mostrarlos al final de la encuesta.
+create or replace function public.encuesta_uniforme_sugerencias()
+returns table(nombre text, comentario text, creado_en timestamptz)
+language sql
+security definer
+set search_path = public
+as $$
+  select nombre, comentario, creado_en
+  from public.encuesta_uniforme_respuestas
+  where comentario is not null and btrim(comentario) <> ''
+  order by creado_en desc
+  limit 300;
+$$;
+
+grant execute on function public.encuesta_uniforme_sugerencias() to anon, authenticated;

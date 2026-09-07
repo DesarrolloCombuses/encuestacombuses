@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Combuses — Selección del nuevo uniforme</title>
+<title>Combuses — Elige el nuevo uniforme</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --brand:#1E8449;
-    --brand-light:#2FA05C;
-    --brand-dark:#145C33;
-    --ink:#161B18;
-    --ink-soft:#66716C;
-    --paper:#F6F8F6;
+    --brand:#2447C8;
+    --brand-light:#3D63E8;
+    --brand-dark:#16307F;
+    --ink:#151A24;
+    --ink-soft:#666E7C;
+    --paper:#F6F8FC;
     --card:#FFFFFF;
-    --panel:#EEF4F0;
-    --line:#E3E8E4;
+    --panel:#EDF1FA;
+    --line:#E2E7F0;
     --danger:#C7402F;
     --radius:18px;
   }
@@ -129,7 +129,7 @@
     padding:1.6rem 1.6rem 1.8rem;
     margin-bottom:1.1rem;
     position:relative;
-    box-shadow:0 1px 2px rgba(20,30,25,.04), 0 10px 30px rgba(20,30,25,.06);
+    box-shadow:0 1px 2px rgba(20,25,45,.04), 0 10px 30px rgba(20,25,45,.06);
   }
   .section.active{display:block;}
   .section .label-row{
@@ -213,7 +213,7 @@
   input[type=text]:focus, select:focus, textarea:focus{
     outline:none;
     border-color:var(--brand);
-    box-shadow:0 0 0 3px rgba(30,132,73,.15);
+    box-shadow:0 0 0 3px rgba(36,71,200,.15);
   }
   .swatches{
     display:flex;
@@ -231,7 +231,7 @@
   .swatch:hover{border-color:var(--brand-light); transform:translateY(-1px);}
   .swatch.selected{
     border-color:var(--brand);
-    box-shadow:0 0 0 3px rgba(30,132,73,.15);
+    box-shadow:0 0 0 3px rgba(36,71,200,.15);
   }
   .swatch-media{
     position:relative;
@@ -261,7 +261,7 @@
     opacity:0;
     transform:scale(.6);
     transition:opacity .15s ease, transform .15s ease;
-    box-shadow:0 3px 8px rgba(20,30,25,.3);
+    box-shadow:0 3px 8px rgba(20,25,45,.3);
   }
   .swatch.selected .check-badge{opacity:1; transform:scale(1);}
   .swatch .cap{
@@ -342,10 +342,61 @@
     flex:1;
     background:var(--brand);
     color:#fff;
-    box-shadow:0 4px 14px rgba(30,132,73,.35);
+    box-shadow:0 4px 14px rgba(36,71,200,.35);
   }
   .nav-btn.next:hover{background:var(--brand-light);}
   .nav-btn.next:disabled{opacity:.6; cursor:default; box-shadow:none;}
+  .suggestions{
+    display:none;
+    margin-top:1.4rem;
+    margin-bottom:2rem;
+  }
+  .suggestions.show{display:block;}
+  .suggestions h2{
+    font-size:1.15rem;
+    margin:0 0 .3rem;
+    font-weight:800;
+    letter-spacing:-.01em;
+  }
+  .suggestions .sub{
+    margin:0 0 1rem;
+    font-size:.85rem;
+    color:var(--ink-soft);
+  }
+  .suggestion-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:1rem 1.1rem;
+    margin-bottom:.8rem;
+    box-shadow:0 1px 2px rgba(20,25,45,.04);
+  }
+  .suggestion-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:.8rem;
+    margin-bottom:.4rem;
+  }
+  .suggestion-name{
+    font-weight:700;
+    font-size:.9rem;
+  }
+  .suggestion-date{
+    font-size:.74rem;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .suggestion-text{
+    margin:0;
+    font-size:.92rem;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+  }
+  .suggestions-empty{
+    font-size:.9rem;
+    color:var(--ink-soft);
+  }
   .thanks{
     display:none;
     background:linear-gradient(150deg, var(--brand-dark), var(--brand) 75%);
@@ -363,7 +414,7 @@
 <header class="hero">
   <div class="wrap">
     <span class="tag">Combuses</span>
-    <h1>Tú eliges — el nuevo uniforme</h1>
+    <h1>Tu voto viste a Combuses</h1>
     <p>Queremos que la nueva dotación te represente. Revisa cada opción y marca la que más se ajuste a tu gusto y a tu jornada de trabajo.</p>
     <div class="header-actions">
       <button type="button" class="edit-toggle" id="statsToggle">Ver estadísticas</button>
@@ -414,6 +465,12 @@
     <h2>Gracias por participar</h2>
     <p>Tu respuesta quedó registrada. Tu opinión nos ayuda a elegir el uniforme con el que te vas a sentir más a gusto.</p>
   </div>
+
+  <section class="suggestions" id="sugerencias">
+    <h2>Lo que opinan tus compañeros</h2>
+    <p class="sub" id="sugerenciasSub"></p>
+    <div id="sugerenciasList"></div>
+  </section>
 
   <div class="stats-section" id="statsSection">
     <p class="stat-total" id="statTotal"></p>
@@ -635,6 +692,74 @@ async function renderStats(){
   });
 }
 
+const sugerenciasSection = document.getElementById("sugerencias");
+const sugerenciasSub = document.getElementById("sugerenciasSub");
+const sugerenciasList = document.getElementById("sugerenciasList");
+
+function formatFecha(valor){
+  if(!valor) return "";
+  const d = new Date(valor);
+  if(isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("es-CO", { day:"numeric", month:"long", year:"numeric" });
+}
+
+async function renderSugerencias(){
+  sugerenciasSection.classList.add("show");
+  sugerenciasList.innerHTML = "";
+  sugerenciasSub.textContent = "Cargando sugerencias…";
+
+  let rows = [];
+  try{
+    const { data, error } = await sb.rpc("encuesta_uniforme_sugerencias");
+    if(error) throw error;
+    rows = data || [];
+  }catch(e){
+    console.error("No se pudieron cargar las sugerencias", e);
+    sugerenciasSub.textContent = "No se pudieron cargar las sugerencias.";
+    return;
+  }
+
+  if(rows.length === 0){
+    sugerenciasSub.textContent = "";
+    const empty = document.createElement("p");
+    empty.className = "suggestions-empty";
+    empty.textContent = "Todavía nadie ha dejado una sugerencia. La tuya puede ser la primera.";
+    sugerenciasList.appendChild(empty);
+    return;
+  }
+
+  sugerenciasSub.textContent = rows.length + " sugerencia" + (rows.length === 1 ? "" : "s") + " de tus compañeros";
+
+  rows.forEach(r=>{
+    const card = document.createElement("div");
+    card.className = "suggestion-card";
+
+    const head = document.createElement("div");
+    head.className = "suggestion-head";
+
+    const name = document.createElement("span");
+    name.className = "suggestion-name";
+    name.textContent = r.nombre || "Anónimo";
+    head.appendChild(name);
+
+    const fecha = formatFecha(r.creado_en);
+    if(fecha){
+      const date = document.createElement("span");
+      date.className = "suggestion-date";
+      date.textContent = fecha;
+      head.appendChild(date);
+    }
+    card.appendChild(head);
+
+    const text = document.createElement("p");
+    text.className = "suggestion-text";
+    text.textContent = r.comentario;
+    card.appendChild(text);
+
+    sugerenciasList.appendChild(card);
+  });
+}
+
 statsToggle.addEventListener("click", async ()=>{
   const showing = statsSection.classList.toggle("show");
   statsToggle.classList.toggle("on", showing);
@@ -642,7 +767,9 @@ statsToggle.addEventListener("click", async ()=>{
   form.style.display = showing ? "none" : "block";
   thanks.style.display = "none";
   if(showing){
-    await renderStats();
+    await Promise.all([renderStats(), renderSugerencias()]);
+  }else{
+    sugerenciasSection.classList.remove("show");
   }
 });
 
@@ -856,6 +983,7 @@ form.addEventListener("submit", async (e)=>{
   thanks.style.display = "block";
   thanks.scrollIntoView({behavior:"smooth", block:"start"});
   refreshCount();
+  renderSugerencias();
 });
 </script>
 
