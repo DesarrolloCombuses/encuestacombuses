@@ -20,6 +20,7 @@
     --line:#E2E7F0;
     --danger:#C7402F;
     --radius:18px;
+    --ease:cubic-bezier(.22,.61,.36,1);
   }
   *{box-sizing:border-box;}
   body{
@@ -36,10 +37,29 @@
     padding:0 1.25rem;
   }
   header.hero{
-    background:linear-gradient(150deg, var(--brand-dark), var(--brand) 75%);
+    position:relative;
+    overflow:hidden;
+    background:
+      radial-gradient(900px 380px at 12% -30%, rgba(255,255,255,.16), transparent 62%),
+      linear-gradient(150deg, var(--brand-dark), var(--brand) 78%);
     color:#fff;
-    padding:2.6rem 1.25rem 2.2rem;
+    padding:2.9rem 1.25rem 2.5rem;
   }
+  header.hero::after{
+    content:"";
+    position:absolute;
+    right:-110px;
+    top:-130px;
+    width:340px;
+    height:340px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,.13), transparent 66%);
+    pointer-events:none;
+  }
+  header.hero .tag{animation:heroSube .65s var(--ease) both .04s;}
+  header.hero h1{animation:heroSube .65s var(--ease) both .13s;}
+  header.hero p{animation:heroSube .65s var(--ease) both .21s;}
+  header.hero .header-actions{animation:heroSube .65s var(--ease) both .29s;}
   header.hero .wrap{
     display:flex;
     flex-direction:column;
@@ -111,8 +131,10 @@
   .progress-fill{
     height:100%;
     width:0%;
-    background:var(--brand);
-    transition:width .25s ease;
+    border-radius:999px;
+    background:linear-gradient(90deg, var(--brand-dark), var(--brand) 45%, var(--brand-light));
+    box-shadow:0 0 14px rgba(36,71,200,.45);
+    transition:width .5s var(--ease);
   }
   .progress-label{
     margin-top:.55rem;
@@ -131,7 +153,16 @@
     position:relative;
     box-shadow:0 1px 2px rgba(20,25,45,.04), 0 10px 30px rgba(20,25,45,.06);
   }
-  .section.active{display:block;}
+  .section.active{
+    display:block;
+    animation:pasoEntra .42s var(--ease) both;
+  }
+  .section.active.hacia-atras{animation-name:pasoEntraAtras;}
+  .section.active .swatch{animation:tarjetaSube .5s var(--ease) both;}
+  .section.active .swatch:nth-child(1){animation-delay:.10s;}
+  .section.active .swatch:nth-child(2){animation-delay:.18s;}
+  .section.active .swatch:nth-child(3){animation-delay:.26s;}
+  .section.active .yesno{animation:tarjetaSube .5s var(--ease) both .16s;}
   .section .label-row{
     display:flex;
     align-items:baseline;
@@ -208,6 +239,7 @@
     border-radius:10px;
     background:#fff;
     color:var(--ink);
+    transition:border-color .18s ease, box-shadow .22s ease;
   }
   textarea{min-height:110px; resize:vertical;}
   input[type=text]:focus, select:focus, textarea:focus{
@@ -228,7 +260,12 @@
     background:#fff;
     transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
   }
-  .swatch:hover{border-color:var(--brand-light); transform:translateY(-1px);}
+  .swatch:hover{
+    border-color:var(--brand-light);
+    transform:translateY(-3px);
+    box-shadow:0 12px 28px rgba(20,25,45,.10);
+  }
+  .swatch:active{transform:translateY(-1px);}
   .swatch.selected{
     border-color:var(--brand);
     box-shadow:0 0 0 3px rgba(36,71,200,.15);
@@ -319,7 +356,9 @@
     padding:.8rem 0 1.4rem;
     position:sticky;
     bottom:0;
-    background:var(--paper);
+    background:linear-gradient(to top, var(--paper) 62%, rgba(246,248,252,0));
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
   }
   .nav-btn{
     font:inherit;
@@ -328,7 +367,9 @@
     border-radius:12px;
     cursor:pointer;
     border:none;
+    transition:transform .18s var(--ease), box-shadow .24s ease, background .2s ease, opacity .2s ease;
   }
+  .nav-btn:active{transform:translateY(1px) scale(.995);}
   .nav-btn.back{
     flex:0 0 auto;
     min-width:96px;
@@ -344,7 +385,24 @@
     color:#fff;
     box-shadow:0 4px 14px rgba(36,71,200,.35);
   }
-  .nav-btn.next:hover{background:var(--brand-light);}
+  .nav-btn.next:hover{
+    background:var(--brand-light);
+    transform:translateY(-2px);
+    box-shadow:0 10px 26px rgba(36,71,200,.42);
+  }
+  .nav-btn.next.enviando{color:transparent; pointer-events:none;}
+  .nav-btn.next.enviando::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    margin:auto;
+    width:20px;
+    height:20px;
+    border:2.5px solid rgba(255,255,255,.35);
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:girar .7s linear infinite;
+  }
   .nav-btn.next:disabled{opacity:.6; cursor:default; box-shadow:none;}
   .already{
     display:none;
@@ -431,6 +489,41 @@
   }
   .thanks h2{margin:0 0 .4rem; font-size:1.15rem;}
   .thanks p{margin:0; font-size:.92rem; opacity:.92;}
+
+  /* ---------- Movimiento ---------- */
+  .nav-btn{position:relative;}
+  .thanks{animation:panelEntra .55s var(--ease) both;}
+  .already.show{animation:panelEntra .5s var(--ease) both;}
+  .suggestions.show h2{animation:heroSube .5s var(--ease) both;}
+  .suggestions.show .sub{animation:heroSube .5s var(--ease) both .06s;}
+  .suggestion-card{animation:tarjetaSube .5s var(--ease) both;}
+  .stat-block{animation:tarjetaSube .5s var(--ease) both;}
+  .stat-bar-fill{transition:width .7s var(--ease);}
+  .edit-toggle{transition:background .2s ease, color .2s ease, transform .18s var(--ease);}
+  .edit-toggle:active{transform:translateY(1px);}
+  .ghost-btn{transition:background .2s ease, transform .18s var(--ease);}
+  .ghost-btn:active{transform:translateY(1px);}
+  .yesno button{transition:background .2s ease, color .2s ease, border-color .2s ease, transform .18s var(--ease);}
+  .yesno button:active{transform:translateY(1px);}
+
+  /* Los keyframes declaran solo el estado inicial: asi el estado final queda
+     en manos del CSS de base y no pisa efectos como el hover de las tarjetas. */
+  @keyframes heroSube{from{opacity:0; transform:translate3d(0,16px,0);}}
+  @keyframes pasoEntra{from{opacity:0; transform:translate3d(30px,0,0) scale(.985);}}
+  @keyframes pasoEntraAtras{from{opacity:0; transform:translate3d(-30px,0,0) scale(.985);}}
+  @keyframes tarjetaSube{from{opacity:0; transform:translate3d(0,14px,0);}}
+  @keyframes panelEntra{from{opacity:0; transform:translate3d(0,18px,0) scale(.98);}}
+  @keyframes girar{to{transform:rotate(360deg);}}
+
+  /* Quien pidio menos movimiento en su sistema recibe la version sin animacion. */
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;
+      scroll-behavior:auto !important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -719,10 +812,13 @@ async function renderStats(){
       const pct = total ? Math.round((count / total) * 100) : 0;
       row.innerHTML = `
         <span class="stat-label">${label}</span>
-        <span class="stat-bar-track"><span class="stat-bar-fill" style="width:${(count/max)*100}%"></span></span>
+        <span class="stat-bar-track"><span class="stat-bar-fill" style="width:0%"></span></span>
         <span class="stat-count">${count} · ${pct}%</span>
       `;
       block.appendChild(row);
+      const fill = row.querySelector(".stat-bar-fill");
+      const ancho = (count / max) * 100;
+      requestAnimationFrame(()=> requestAnimationFrame(()=>{ fill.style.width = ancho + "%"; }));
     });
 
     statBlocks.appendChild(block);
@@ -767,9 +863,10 @@ async function renderSugerencias(){
 
   sugerenciasSub.textContent = rows.length + " sugerencia" + (rows.length === 1 ? "" : "s") + " de tus compañeros";
 
-  rows.forEach(r=>{
+  rows.forEach((r, i)=>{
     const card = document.createElement("div");
     card.className = "suggestion-card";
+    card.style.animationDelay = Math.min(i, 8) * 0.06 + "s";
 
     const head = document.createElement("div");
     head.className = "suggestion-head";
@@ -986,15 +1083,19 @@ function updateNav(){
   nextBtn.textContent = currentStep === total - 1 ? "Enviar respuesta" : "Siguiente";
 }
 
-function showStep(i){
-  steps.forEach((el, idx)=> el.classList.toggle("active", idx === i));
+function showStep(i, direccion){
+  const atras = direccion === "atras";
+  steps.forEach((el, idx)=>{
+    el.classList.toggle("active", idx === i);
+    if(idx === i) el.classList.toggle("hacia-atras", atras);
+  });
   currentStep = i;
   updateNav();
   window.scrollTo({top: 0, behavior: "smooth"});
 }
 
 backBtn.addEventListener("click", ()=>{
-  if(currentStep > 0) showStep(currentStep - 1);
+  if(currentStep > 0) showStep(currentStep - 1, "atras");
 });
 
 async function refreshCount(){
@@ -1044,7 +1145,7 @@ form.addEventListener("submit", async (e)=>{
   section.classList.remove("has-error");
 
   if(currentStep < steps.length - 1){
-    showStep(currentStep + 1);
+    showStep(currentStep + 1, "adelante");
     return;
   }
 
@@ -1057,6 +1158,7 @@ form.addEventListener("submit", async (e)=>{
   };
 
   nextBtn.disabled = true;
+  nextBtn.classList.add("enviando");
   try{
     const { error } = await sb.from("encuesta_uniforme_respuestas").insert([respuesta]);
     if(error) throw error;
@@ -1070,9 +1172,11 @@ form.addEventListener("submit", async (e)=>{
     submitError.style.display = "block";
     submitError.scrollIntoView({behavior:"smooth", block:"center"});
     nextBtn.disabled = false;
+    nextBtn.classList.remove("enviando");
     return;
   }
   nextBtn.disabled = false;
+  nextBtn.classList.remove("enviando");
 
   guardarMarca(respuesta.cedula);
   bloqueadoPorDispositivo = true;
